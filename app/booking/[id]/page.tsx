@@ -317,7 +317,7 @@ export default function BookingPage({ params }: { params: { id: string } }) {
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, use } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
@@ -365,8 +365,9 @@ const PROPERTIES: Record<string, any> = {
   },
 }
 
-export default function BookingPage({ params }: { params: { id: string } }) {
-  const property = getPropertyById(Number.parseInt(params.id))
+export default function BookingPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
+  const property = getPropertyById(Number.parseInt(id))
   const [step, setStep] = useState<"booking" | "payment" | "receipt">("booking")
   const [loading, setLoading] = useState(false)
 
