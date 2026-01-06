@@ -1,8 +1,8 @@
 "use client"
-
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/lib/auth-context"
 
 const ADMINS = [
   { id: 1, name: "Admin One", email: "admin@test.com", properties: 3, status: "Active" },
@@ -16,6 +16,22 @@ const ALL_TRANSACTIONS = [
 
 export default function SuperAdminDashboard() {
   const [showAddAdmin, setShowAddAdmin] = useState(false)
+  const router = useRouter()
+  const { user, isAuthenticated } = useAuth()
+
+  useEffect(() => {
+    if (!isAuthenticated || user?.userType !== "superadmin") {
+      router.push("/login")
+    }
+  }, [isAuthenticated, user, router])
+
+  const handleLogout = () => {
+    router.push("/logout")
+  }
+
+  if (!isAuthenticated || user?.userType !== "superadmin") {
+    return null
+  }
 
   return (
     <div className="min-h-screen bg-neutral-50">
@@ -24,8 +40,8 @@ export default function SuperAdminDashboard() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-3xl font-bold">Super Admin Dashboard</h1>
-            <Button variant="outline" asChild>
-              <Link href="/logout">Logout</Link>
+            <Button variant="outline" onClick={handleLogout}>
+              Logout
             </Button>
           </div>
           <p className="text-primary-light">Platform overview and admin management</p>

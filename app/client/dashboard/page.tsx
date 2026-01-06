@@ -1,7 +1,10 @@
 "use client"
 
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { useAuth } from "@/lib/auth-context"
+import { useEffect } from "react"
 
 const BOOKINGS = [
   {
@@ -25,15 +28,32 @@ const BOOKINGS = [
 ]
 
 export default function ClientDashboard() {
+  const router = useRouter()
+  const { user, isAuthenticated } = useAuth()
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push("/login")
+    }
+  }, [isAuthenticated, router])
+
+  const handleLogout = () => {
+    router.push("/logout")
+  }
+
+  if (!isAuthenticated) {
+    return null
+  }
+
   return (
     <div className="min-h-screen bg-neutral-50">
       {/* Header */}
       <div className="bg-primary text-white py-8">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-3xl font-bold">Welcome, Client</h1>
-            <Button variant="outline" asChild>
-              <Link href="/logout">Logout</Link>
+            <h1 className="text-3xl font-bold">Welcome, {user?.name || "Client"}</h1>
+            <Button variant="outline" onClick={handleLogout}>
+              Logout
             </Button>
           </div>
           <p className="text-primary-light">Manage your bookings and reservations</p>
